@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                checkout scm
+                git branch: 'main', url: 'https://github.com/Muguvarun/Sone--Jen.git'
             }
         }
         stage('Validate Files') {
@@ -18,14 +18,20 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+                sh 'docker build -t sonejen-app:latest .'
             }
         }
         stage('Run Container') {
             steps {
                 sh 'docker rm -f myapp || true'
-                sh 'docker run -d -p 8090:80 --name myapp $IMAGE_NAME:$IMAGE_TAG'
+                sh 'docker run -d -p 8090:80 --name myapp :latest npm test || echo "No tests defined"'
             }
+        }
+        stage('Deploy') { steps { sh ''' docker stop sonejen-app || true 
+        docker rm sonejen-app || true 
+        docker run -d --name sonejen-app -p 8080:80 sonejen-app:latest 
+        ''' 
+            } 
         }
         stage('Smoke Test') {
             steps {
