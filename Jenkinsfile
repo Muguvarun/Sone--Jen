@@ -9,7 +9,7 @@ pipeline {
                 steps { 
                  git branch: 'main', 
                     url: 'https://github.com/Muguvarun/Sone--Jen.git', 
-                    credentialsId: 'github-token'
+                    credentialsId: 'Pass'
             }
         }
         stage('Validate Files') {
