@@ -7,9 +7,9 @@ pipeline {
     stages {
         stage('Checkout Code') {
                 steps { 
-                    withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-                     sh 'git clone https://$GITHUB_TOKEN@github.com/Muguvarun/Sone--Jen.git'
-
+                 git branch: 'main', 
+                    url: 'https://github.com/Muguvarun/Sone--Jen.git', 
+                    credentialsId: 'github-token'
             }
         }
         stage('Validate Files') {
