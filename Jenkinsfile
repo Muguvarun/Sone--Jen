@@ -6,49 +6,58 @@ pipeline {
     }
     stages {
         stage('Checkout Code') {
-                steps { 
-                 git branch: 'main', 
+            steps { 
+                git branch: 'main', 
                     url: 'https://github.com/Muguvarun/Sone--Jen.git', 
                     credentialsId: 'Pass'
-                }
             }
         }
+
         stage('Validate Files') {
             steps {
-                sh 'test -f index.html || exit 1'
-                sh 'test -f Dockerfile || exit 1'
+                sh 'test -f index.html'
+                sh 'test -f Dockerfile'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t sonejen-app:latest .'
             }
         }
-        stage('Run App Container') {
-    steps {
-        sh '''
-        docker stop sonejen-app || true
-        docker rm sonejen-app || true
-        docker run -d --name sonejen-app -p 8081:80 sonejen-app:latest
-        '''
-    }
-} 
-    stage('Run Test Container') {
-    steps {
-        sh 'docker rm -f myapp || true'
-        sh 'docker run -d -p 8081:80 --name myapp myapp:latest npm test || echo "No tests defined"'
-    }
-}
 
-        stage('Deploy') { steps { sh ''' docker stop sonejen-app || true 
-        docker rm sonejen-app || true 
-        docker run -d --name sonejen-app -p 8080:80 sonejen-app:latest 
-        ''' 
-            } 
+        stage('Run App Container') {
+            steps {
+                sh '''
+                docker stop sonejen-app || true
+                docker rm sonejen-app || true
+                docker run -d --name sonejen-app -p 8081:80 sonejen-app:latest
+                '''
+            }
         }
+
+        stage('Run Test Container') {
+            steps {
+                sh '''
+                docker rm -f myapp || true
+                docker run -d -p 8082:80 --name myapp myapp:latest npm test || echo "No tests defined"
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                docker stop sonejen-app || true 
+                docker rm sonejen-app || true 
+                docker run -d --name sonejen-app -p 8081:80 sonejen-app:latest 
+                '''
+            }
+        }
+
         stage('Smoke Test') {
             steps {
-                sh 'curl http://localhost:8090'
+                sh 'curl http://localhost:8081'
             }
         }
     }
@@ -60,4 +69,4 @@ pipeline {
             echo 'Pipeline failed'
         }
     }
-
+}
