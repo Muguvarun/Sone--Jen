@@ -29,14 +29,14 @@ pipeline {
         sh '''
         docker stop sonejen-app || true
         docker rm sonejen-app || true
-        docker run -d --name sonejen-app -p 8080:80 sonejen-app:latest
+        docker run -d --name sonejen-app -p 8081:80 sonejen-app:latest
         '''
     }
 } 
     stage('Run Test Container') {
     steps {
         sh 'docker rm -f myapp || true'
-        sh 'docker run -d -p 8080:80 --name myapp myapp:latest npm test || echo "No tests defined"'
+        sh 'docker run -d -p 8081:80 --name myapp myapp:latest npm test || echo "No tests defined"'
     }
 }
 
